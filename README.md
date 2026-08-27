@@ -2,7 +2,7 @@
 
 Default extension registry for [FLACidal](https://github.com/kushiemoon-dev/FLACidal) and [FLACidal-Mobile](https://github.com/kushiemoon-dev/FLACidal-Mobile).
 
-`index.json` is fetched by the app's "Browse" tab. No extensions published yet — coming soon.
+`index.json` is fetched by the app's "Browse" tab and lists all extensions currently published to this registry.
 
 ## Manifest format
 
@@ -158,8 +158,7 @@ Example entry:
 }
 ```
 
-`index.json` itself is a JSON array of these entries (currently `[]` — no extensions published
-yet).
+`index.json` itself is a JSON array of these entries — one per published extension.
 
 ## Contributing
 
@@ -167,10 +166,10 @@ Before opening a pull request, validate your changes locally:
 
 ```bash
 # Validate index.json against the registry schema
-npx ajv-cli validate --spec=draft2020 --strict=false -s schema/registry-entry.schema.json -d index.json
+npx ajv-cli validate --spec=draft2020 -s schema/registry-entry.schema.json -d index.json
 
 # Validate all extension manifests
-npx ajv-cli validate --spec=draft2020 --strict=false -s schema/extension-manifest.schema.json -d "extensions/*/extension.json"
+npx ajv-cli validate --spec=draft2020 -s schema/extension-manifest.schema.json -d "extensions/*/extension.json"
 ```
 
 These commands will run automatically on every pull request targeting `main` via GitHub Actions.

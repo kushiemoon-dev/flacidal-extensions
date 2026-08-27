@@ -36,7 +36,6 @@
       },
       "downloadURL": {
         "type": "string",
-        "format": "uri",
         "description": "Listing-only field: direct download link for the extension's zip (containing extension.json).",
         "examples": ["https://github.com/acme-labs/acme-hires-extension/releases/download/v1.3.0/acme-hires.zip"]
       },
