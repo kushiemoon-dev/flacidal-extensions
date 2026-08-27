@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "id": "deezer-metadata",
+    "name": "Deezer Metadata",
+    "description": "Fills missing album, year, label, copyright, UPC, cover art and track/disc numbers from Deezer's public catalog, matched by ISRC.",
+    "category": "metadata",
+    "latestVersion": "1.0.0",
+    "downloadURL": "https://raw.githubusercontent.com/kushiemoon-dev/flacidal-extensions/main/extensions/deezer-metadata/deezer-metadata.zip",
+    "permissions": ["network"]
+  }
+]
