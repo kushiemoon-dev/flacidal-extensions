@@ -167,10 +167,10 @@ Before opening a pull request, validate your changes locally:
 
 ```bash
 # Validate index.json against the registry schema
-npx ajv-cli validate --spec=draft2020 -s schema/registry-entry.schema.json -d index.json
+npx ajv-cli validate --spec=draft2020 --strict=false -s schema/registry-entry.schema.json -d index.json
 
 # Validate all extension manifests
-npx ajv-cli validate --spec=draft2020 -s schema/extension-manifest.schema.json -d "extensions/*/extension.json"
+npx ajv-cli validate --spec=draft2020 --strict=false -s schema/extension-manifest.schema.json -d "extensions/*/extension.json"
 ```
 
 These commands will run automatically on every pull request targeting `main` via GitHub Actions.
