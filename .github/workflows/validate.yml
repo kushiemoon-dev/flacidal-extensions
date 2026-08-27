@@ -1,0 +1,21 @@
+name: Validate registry
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate index.json
+        run: npx --yes ajv-cli@5 validate --spec=draft2020 --strict=false -s schema/registry-entry.schema.json -d index.json --all-errors
+      - name: Validate extension manifests
+        run: |
+          shopt -s nullglob
+          status=0
+          for f in extensions/*/extension.json; do
+            npx --yes ajv-cli@5 validate --spec=draft2020 --strict=false -s schema/extension-manifest.schema.json -d "$f" --all-errors || status=1
+          done
+          exit $status
