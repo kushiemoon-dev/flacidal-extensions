@@ -8,10 +8,10 @@ Default extension registry for [FLACidal](https://github.com/kushiemoon-dev/FLAC
 
 Two related-but-different JSON shapes are involved:
 
-1. **`extension.json`** — the full manifest, bundled inside an extension's downloadable zip.
+1. **`extension.json`**: the full manifest, bundled inside an extension's downloadable zip.
    This is what FLACidal-Core's `ExtensionManifest` struct (plus the `SourceExtCfg`,
    `MetadataExtCfg`, and `AuthField` types it embeds) unmarshals on install.
-2. **An `index.json` entry** — a deliberately minimal listing shape used by this registry,
+2. **An `index.json` entry**: a deliberately minimal listing shape used by this registry,
    so the app's Browse tab can show a catalog without downloading every extension's zip.
 
 Both are formalized as JSON Schema (draft 2020-12) in [`schema/`](./schema):
@@ -23,7 +23,7 @@ validates `index.json` as a whole (one document = one array of entries).
 
 Field names below are grouped by the Go struct that carries them. Some names repeat across
 groups on purpose (e.g. `name` on both the manifest and `sourceConfig`, `baseUrl` on both
-`sourceConfig` and `metadataConfig`) — each occurrence is independent, not a shared value.
+`sourceConfig` and `metadataConfig`); each occurrence is independent, not a shared value.
 
 **`ExtensionManifest`** (top level)
 
@@ -31,8 +31,8 @@ groups on purpose (e.g. `name` on both the manifest and `sourceConfig`, `baseUrl
 |---|---|---|---|---|
 | `id` | string | yes | Unique, stable identifier for the extension. Used as its install directory name. | `"acme-hires"` |
 | `name` | string | yes | Human-readable display name shown in the app. | `"Acme Hi-Res"` |
-| `version` | string | yes | The extension's own semver, for this zip's contents. Distinct from `index.json`'s `latestVersion` — see below. | `"1.3.0"` |
-| `minAppVersion` | string | no | Minimum FLACidal app version required. Treated as "no minimum" when empty/omitted — not required by this schema, even though the Go struct has no `omitempty` on it (that only affects marshal-out behavior, not what Core accepts on install). | `"2.5.0"` |
+| `version` | string | yes | The extension's own semver, for this zip's contents. Distinct from `index.json`'s `latestVersion`, see below. | `"1.3.0"` |
+| `minAppVersion` | string | no | Minimum FLACidal app version required. Treated as "no minimum" when empty/omitted; not required by this schema, even though the Go struct has no `omitempty` on it (that only affects marshal-out behavior, not what Core accepts on install). | `"2.5.0"` |
 | `author` | string | yes | Extension author's name or handle. | `"acme-labs"` |
 | `description` | string | no | Short summary of what the extension does. | `"Streams and downloads Acme's hi-res FLAC catalog."` |
 | `category` | string | no | Free-form grouping for the Browse tab. Suggested values (not enforced by Core): `download`, `metadata`, `lyrics`, `utility`. | `"download"` |
@@ -40,11 +40,11 @@ groups on purpose (e.g. `name` on both the manifest and `sourceConfig`, `baseUrl
 | `permissions` | string[] | yes | Permissions requested, shown to the user before install. Suggested value (not enforced by Core): `network`. | `["network"]` |
 | `canDownload` | bool | no | Whether this extension can act as a download source. Pairs with `sourceConfig` and `downloadPriority`. | `true` |
 | `downloadPriority` | int | no | Order download-capable extensions are tried in. Lower = tried first, `0` = disabled. | `10` |
-| `sourceConfig` | object | no | Source (download) configuration — see `SourceExtCfg` below. Present when `capabilities` includes `source`. | see below |
+| `sourceConfig` | object | no | Source (download) configuration, see `SourceExtCfg` below. Present when `capabilities` includes `source`. | see below |
 | `canEnrichMetadata` | bool | no | Whether this extension can act as a metadata enrichment source. Pairs with `metadataConfig` and `metadataPriority`. | `true` |
 | `metadataPriority` | int | no | Order metadata-capable extensions are tried in. Lower = tried first, `0` = disabled. | `5` |
-| `metadataConfig` | object | no | Metadata enrichment configuration — see `MetadataExtCfg` below. Present when `capabilities` includes `metadata`. | see below |
-| `authFields` | array | no | Credential fields the app should prompt the user for — see `AuthField` below. | see below |
+| `metadataConfig` | object | no | Metadata enrichment configuration, see `MetadataExtCfg` below. Present when `capabilities` includes `metadata`. | see below |
+| `authFields` | array | no | Credential fields the app should prompt the user for, see `AuthField` below. | see below |
 
 **`SourceExtCfg`** (`sourceConfig`)
 
@@ -124,7 +124,7 @@ Full example (`extension.json` inside the zip):
 
 ### `index.json` entry (registry listing)
 
-Each entry in `index.json` is intentionally minimal — it is **not** the full manifest above.
+Each entry in `index.json` is intentionally minimal; it is **not** the full manifest above.
 It exists so the Browse tab can list and preview extensions without fetching every zip.
 
 | Field | Type | Required | Description | Example |
@@ -140,7 +140,7 @@ It exists so the Browse tab can list and preview extensions without fetching eve
 `latestVersion` and `downloadURL` are **listing-only** fields, distinct from `version`, which
 lives inside the manifest (`extension.json`) itself and is the extension author's own semver for
 the zip's contents. `latestVersion` is maintained by whoever publishes/updates this registry
-entry (e.g. when bumping to a new release) — it is not read automatically from the zip. The name
+entry (e.g. when bumping to a new release); it is not read automatically from the zip. The name
 divergence (`latestVersion` here vs. `version` in the manifest) is an existing fact of the app
 today, not an inconsistency to fix in this repo.
 
@@ -158,7 +158,7 @@ Example entry:
 }
 ```
 
-`index.json` itself is a JSON array of these entries — one per published extension.
+`index.json` itself is a JSON array of these entries, one per published extension.
 
 ## Contributing
 
