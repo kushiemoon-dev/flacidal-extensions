@@ -1,0 +1,217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/kushiemoon-dev/flacidal-extensions/main/schema/extension-manifest.schema.json",
+  "title": "FLACidal extension manifest (extension.json)",
+  "description": "Full manifest bundled inside an extension's downloadable zip as extension.json. Mirrors FLACidal-Core's ExtensionManifest struct (plus the SourceExtCfg, MetadataExtCfg, and AuthField types it embeds). This is a superset of the minimal shape used by index.json entries -- see registry-entry.schema.json for that.",
+  "type": "object",
+  "required": ["id", "name", "version", "author", "capabilities", "permissions"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique, stable identifier for the extension. Used as its install directory name and as the key in Core's extension map.",
+      "examples": ["acme-hires"]
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable display name shown in the app.",
+      "examples": ["Acme Hi-Res"]
+    },
+    "version": {
+      "type": "string",
+      "description": "The extension's own semver, for the contents of this zip. Distinct from index.json's latestVersion, which is a listing-only field maintained separately -- see README.",
+      "examples": ["1.3.0"]
+    },
+    "minAppVersion": {
+      "type": "string",
+      "description": "Minimum FLACidal app version this extension requires. Not marked required by this schema (an empty/omitted value is treated as \"no minimum\"), even though the Go struct has no `omitempty` on this field -- that only affects marshal-out behavior, not what Core accepts on install.",
+      "examples": ["2.5.0"]
+    },
+    "author": {
+      "type": "string",
+      "description": "Extension author's name or handle.",
+      "examples": ["acme-labs"]
+    },
+    "description": {
+      "type": "string",
+      "description": "Short summary of what the extension does.",
+      "examples": ["Streams and downloads Acme's hi-res FLAC catalog, and enriches tracks with Acme's editorial metadata."]
+    },
+    "category": {
+      "type": "string",
+      "description": "Free-form category used for grouping in the app's Browse tab. Suggested values (not enforced by Core): \"download\", \"metadata\", \"lyrics\", \"utility\".",
+      "examples": ["download"]
+    },
+    "capabilities": {
+      "type": "array",
+      "description": "What this extension can do. Suggested values (not enforced by Core): \"source\", \"metadata\", \"resolver\". Determines which of sourceConfig/metadataConfig the app expects to find populated.",
+      "items": { "type": "string" },
+      "examples": [["source", "metadata"]]
+    },
+    "permissions": {
+      "type": "array",
+      "description": "Permissions the extension requests, shown to the user before install. Suggested value (not enforced by Core): \"network\".",
+      "items": { "type": "string" },
+      "examples": [["network"]]
+    },
+    "canDownload": {
+      "type": "boolean",
+      "description": "Whether this extension can act as a download source. Pairs with sourceConfig and downloadPriority.",
+      "default": false,
+      "examples": [true]
+    },
+    "downloadPriority": {
+      "type": "integer",
+      "description": "Order in which download-capable extensions are tried. Lower is tried first; 0 disables the extension as a download source.",
+      "examples": [10]
+    },
+    "sourceConfig": {
+      "$ref": "#/$defs/sourceExtCfg",
+      "description": "Source (download) configuration. Present when capabilities includes \"source\"."
+    },
+    "canEnrichMetadata": {
+      "type": "boolean",
+      "description": "Whether this extension can act as a metadata enrichment source. Pairs with metadataConfig and metadataPriority.",
+      "default": false,
+      "examples": [true]
+    },
+    "metadataPriority": {
+      "type": "integer",
+      "description": "Order in which metadata-capable extensions are tried. Lower is tried first; 0 disables the extension as a metadata source.",
+      "examples": [5]
+    },
+    "metadataConfig": {
+      "$ref": "#/$defs/metadataExtCfg",
+      "description": "Metadata enrichment configuration. Present when capabilities includes \"metadata\"."
+    },
+    "authFields": {
+      "type": "array",
+      "description": "Credential fields the app should prompt the user for and pass through as request headers (auth data is keyed by these fields' `key`).",
+      "items": { "$ref": "#/$defs/authField" }
+    }
+  },
+  "$defs": {
+    "sourceExtCfg": {
+      "type": "object",
+      "description": "Mirrors FLACidal-Core's SourceExtCfg struct.",
+      "required": ["name", "displayName", "urlPattern", "baseUrl"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Internal identifier for this source. Distinct from the manifest's top-level name -- this is the source's own key (e.g. used in logs).",
+          "examples": ["acme"]
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Human-readable source name shown in the app.",
+          "examples": ["Acme Music"]
+        },
+        "urlPattern": {
+          "type": "string",
+          "description": "Regex matched against a shared/pasted URL's host to route it to this extension.",
+          "examples": ["acme-music\\.com"]
+        },
+        "baseUrl": {
+          "type": "string",
+          "description": "Base URL the endpoint fields below are relative to.",
+          "examples": ["https://api.acme-music.com/v1"]
+        },
+        "trackEndpoint": {
+          "type": "string",
+          "description": "Endpoint for fetching a single track.",
+          "examples": ["/track/{id}"]
+        },
+        "albumEndpoint": {
+          "type": "string",
+          "description": "Endpoint for fetching an album.",
+          "examples": ["/album/{id}"]
+        },
+        "playlistEndpoint": {
+          "type": "string",
+          "description": "Endpoint for fetching a playlist.",
+          "examples": ["/playlist/{id}"]
+        },
+        "searchEndpoint": {
+          "type": "string",
+          "description": "Endpoint for search queries.",
+          "examples": ["/search"]
+        },
+        "streamEndpoint": {
+          "type": "string",
+          "description": "Endpoint for resolving a track's streamable/downloadable URL.",
+          "examples": ["/track/{id}/stream"]
+        },
+        "trackMapping": {
+          "type": "object",
+          "description": "Maps FLACidal track fields to dot-separated JSON paths in this source API's response.",
+          "additionalProperties": { "type": "string" },
+          "examples": [{ "title": "track.title", "artist": "track.artist.name" }]
+        },
+        "albumMapping": {
+          "type": "object",
+          "description": "Maps FLACidal album fields to dot-separated JSON paths in this source API's response.",
+          "additionalProperties": { "type": "string" },
+          "examples": [{ "title": "album.title", "artist": "album.artist.name" }]
+        },
+        "streamUrlField": {
+          "type": "string",
+          "description": "Dot-separated JSON path to the streamable URL within the streamEndpoint response.",
+          "examples": ["data.url"]
+        }
+      }
+    },
+    "metadataExtCfg": {
+      "type": "object",
+      "description": "Mirrors FLACidal-Core's MetadataExtCfg struct.",
+      "required": ["baseUrl", "lookupEndpoint"],
+      "additionalProperties": false,
+      "properties": {
+        "baseUrl": {
+          "type": "string",
+          "description": "Base URL the lookupEndpoint field is relative to.",
+          "examples": ["https://api.acme-music.com/v1"]
+        },
+        "lookupEndpoint": {
+          "type": "string",
+          "description": "Endpoint for looking up metadata by ISRC, templated with {isrc}.",
+          "examples": ["/metadata/lookup?isrc={isrc}"]
+        },
+        "fieldMapping": {
+          "type": "object",
+          "description": "Maps a TrackMetadata field name to a dot-separated JSON path in the lookup response.",
+          "additionalProperties": { "type": "string" },
+          "examples": [{ "genre": "result.genres.0.name", "label": "result.label.name" }]
+        }
+      }
+    },
+    "authField": {
+      "type": "object",
+      "description": "Mirrors FLACidal-Core's AuthField struct. One entry per credential the app should collect from the user.",
+      "required": ["key", "label", "type", "required"],
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "type": "string",
+          "description": "Key this credential is stored/passed under (e.g. as a request header name).",
+          "examples": ["apiKey"]
+        },
+        "label": {
+          "type": "string",
+          "description": "Label shown to the user in the credential entry form.",
+          "examples": ["API Key"]
+        },
+        "type": {
+          "type": "string",
+          "description": "Input type hint for the credential entry form. Suggested values (not enforced by Core): \"text\", \"password\".",
+          "examples": ["password"]
+        },
+        "required": {
+          "type": "boolean",
+          "description": "Whether the user must fill in this field before the extension can be used.",
+          "examples": [true]
+        }
+      }
+    }
+  }
+}

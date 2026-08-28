@@ -1,0 +1,28 @@
+{
+  "id": "deezer-metadata",
+  "name": "Deezer Metadata",
+  "version": "1.0.0",
+  "minAppVersion": "0.8.0",
+  "author": "kushiemoon-dev",
+  "description": "Fills missing album, year, label, copyright, UPC, cover art and track/disc numbers from Deezer's public catalog, matched by ISRC.",
+  "category": "metadata",
+  "capabilities": ["metadata"],
+  "permissions": ["network"],
+  "canEnrichMetadata": true,
+  "metadataPriority": 10,
+  "metadataConfig": {
+    "baseUrl": "https://api.deezer.com/2.0",
+    "lookupEndpoint": "/track/isrc:{isrc}",
+    "fieldMapping": {
+      "album": "album.title",
+      "year": "album.release_date",
+      "label": "album.label",
+      "upc": "album.upc",
+      "copyright": "copyright",
+      "coverUrl": "album.cover_xl",
+      "trackNumber": "track_position",
+      "discNumber": "disk_number"
+    }
+  },
+  "authFields": []
+}

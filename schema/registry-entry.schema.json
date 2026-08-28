@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/kushiemoon-dev/flacidal-extensions/main/schema/registry-entry.schema.json",
+  "title": "FLACidal extension registry (index.json)",
+  "description": "Validates index.json as a whole document: one document = one array of listing entries. Each entry is a deliberately minimal shape (NOT the full extension.json manifest -- see extension-manifest.schema.json for that) used by the app's Browse tab to show a catalog without downloading every extension's zip.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "name", "latestVersion", "downloadURL"],
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Extension identifier, matching the id field inside the extension's own extension.json.",
+        "examples": ["acme-hires"]
+      },
+      "name": {
+        "type": "string",
+        "description": "Display name shown in the Browse tab.",
+        "examples": ["Acme Hi-Res"]
+      },
+      "description": {
+        "type": "string",
+        "description": "Short summary shown in the Browse tab.",
+        "examples": ["Streams and downloads Acme's hi-res FLAC catalog, and enriches tracks with Acme's editorial metadata."]
+      },
+      "category": {
+        "type": "string",
+        "description": "Free-form category used for grouping in the Browse tab.",
+        "examples": ["download"]
+      },
+      "latestVersion": {
+        "type": "string",
+        "description": "Listing-only field: the version currently published at downloadURL. Distinct from the manifest's own `version` field inside extension.json -- this field is maintained by whoever publishes the registry entry (e.g. when updating this file for a new release) and is not read automatically from the extension's zip. The name divergence (latestVersion here vs. version in the manifest) is an existing fact of the app, not an inconsistency to fix.",
+        "examples": ["1.3.0"]
+      },
+      "downloadURL": {
+        "type": "string",
+        "description": "Listing-only field: direct download link for the extension's zip (containing extension.json).",
+        "examples": ["https://github.com/acme-labs/acme-hires-extension/releases/download/v1.3.0/acme-hires.zip"]
+      },
+      "permissions": {
+        "type": "array",
+        "description": "Preview of the permissions the extension requests, shown before install. Mirrors (a copy of) the permissions field inside extension.json.",
+        "items": { "type": "string" },
+        "examples": [["network"]]
+      }
+    }
+  }
+}
